@@ -48,22 +48,28 @@ const windowIsDefined = (typeof window === "object");
 
 (function(factory) {
 	if(typeof define === "function" && define.amd) {
-		define(["jquery"], factory);
+		define(["jquery", "@popperjs/core"], factory);
 	}
 	else if(typeof module === "object" && module.exports) {
-		var jQuery;
+		var jQuery, Popper;
 		try {
 			jQuery = require("jquery");
 		}
 		catch (err) {
 			jQuery = null;
 		}
-		module.exports = factory(jQuery);
+		try {
+			Popper = require("@popperjs/core");
+		}
+		catch (err) {
+			Popper = null;
+		}
+		module.exports = factory(jQuery, Popper);
 	}
 	else if(window) {
-		window.Slider = factory(window.jQuery);
+		window.Slider = factory(window.jQuery, window.Popper);
 	}
-}(function($) {
+}(function($, Popper) {
 	// Constants
 	const NAMESPACE_MAIN = 'slider';
 	const NAMESPACE_ALTERNATE = 'bootstrapSlider';
@@ -1322,7 +1328,7 @@ const windowIsDefined = (typeof window === "object");
 					this.handle1.removeAttribute('aria-valuetext');
 				}
 
-				this.handle2.style[this.stylePos] =`${positionPercentages[1]}%`;
+				this.handle2.style[this.stylePos] = `${positionPercentages[1]}%`;
 				this.handle2.setAttribute('aria-valuenow', this._state.value[1]);
 				formattedValue = this.options.formatter(this._state.value[1]);
 				if (isNaN(formattedValue)) {
@@ -1480,7 +1486,14 @@ const windowIsDefined = (typeof window === "object");
 					formattedTooltipVal = this.options.formatter(this._state.value[0]);
 					this._setText(this.tooltipInner, formattedTooltipVal);
 
-					this.tooltip.style[this.stylePos] = `${ positionPercentages[0] }%`;
+          this.tooltip.style[this.stylePos] = `${ positionPercentages[0] }%`;
+          
+          if (Popper) {
+            if (this.popper) {
+              this.popper.destroy();
+            }
+            this.popper = Popper.createPopper(xxx tip might not exist xxx, this.tooltip);
+          }
 				}
 
 				if (this.options.orientation === 'vertical') {
