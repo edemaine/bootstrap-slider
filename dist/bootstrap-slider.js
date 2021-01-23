@@ -1247,10 +1247,12 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 				} else {
 					var minX = 0,
 					    maxX = document.body.clientWidth;
-					if (rect.x < minX) {
-						offset = minX - rect.x;
-					} else if (rect.x + rect.width > maxX) {
-						offset = maxX - (rect.x + rect.width);
+					// Because of .tooltip-inner's left: -50%, the actual rectangle span
+					// is [rect.x - rect.width / 2, rect.x + rect.width + 2]
+					if (rect.x - rect.width / 2 < minX) {
+						offset = minX - (rect.x - rect.width / 2);
+					} else if (rect.x + rect.width / 2 > maxX) {
+						offset = maxX - (rect.x + rect.width / 2);
 					}
 					if (offset) {
 						if (this.stylePos === 'left') {
